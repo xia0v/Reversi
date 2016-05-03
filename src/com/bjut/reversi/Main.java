@@ -1,28 +1,34 @@
 package com.bjut.reversi;
 
-	import java.awt.BorderLayout;
-	import java.awt.Color;
-	import java.awt.Dimension;
-	import java.awt.FlowLayout;
-	import java.awt.Graphics;
-	import java.awt.Graphics2D;
-	import java.awt.Insets;
-	import java.awt.Point;
-	import java.awt.event.ActionEvent;
-	import java.awt.event.ActionListener;
-	import java.awt.event.MouseAdapter;
-	import java.awt.event.MouseEvent;
-	import java.awt.event.MouseListener;
-	import java.io.PrintStream;
-	import javax.swing.ButtonGroup;
-	import javax.swing.ImageIcon;
-	import javax.swing.JButton;
-	import javax.swing.JFrame;
-	import javax.swing.JLabel;
-	import javax.swing.JOptionPane;
-	import javax.swing.JPanel;
-	import javax.swing.JRadioButton;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+
+/**
+ * http://wybwzl.iteye.com/blog/1160837
+ * http://wybwzl.iteye.com/blog/1161895
+ * 
+ * @author 
+ *
+ */
 public class Main   extends JFrame
 	  implements Config
 	{
@@ -93,6 +99,7 @@ public class Main   extends JFrame
 	      public void paint(Graphics g)
 	      {
 	        super.paint(g);
+	        System.out.println("jp_play paint");
 	        g.drawImage(Main.this.chessboard.getImage(), 0, 0, getWidth(), getHeight(), null);
 	        if (Main.this.box != null)
 	          for (int i = 0; i < Main.this.box.length; i++)
@@ -204,7 +211,7 @@ public class Main   extends JFrame
 	      private int y;
 	      private int r;
 	      private int c;
-	      private boolean flag;
+	      private boolean flag;//标识符,是否
 	      private boolean bot_continue;
 
 	      public void mouseReleased(MouseEvent e) { if (Main.this.end)
@@ -217,8 +224,9 @@ public class Main   extends JFrame
 	        this.y = e.getY();
 	        this.r = (this.x / 50);
 	        this.c = (this.y / 50);
-	        if ((this.x - this.r * 50 > 6) && ((this.r + 1) * 50 - this.x > 6) && (this.y - this.c * 50 > 6) && ((this.c + 1) * 50 - this.y > 6) && (Main.this.check[this.r][this.c] == 1))
-	        {
+	        if ((this.x - this.r * 50 > 6) && ((this.r + 1) * 50 - this.x > 6) && (this.y - this.c * 50 > 6) && ((this.c + 1) * 50 - this.y > 6) && (Main.this.check[r][c] == 1))
+	        {//是否在点击范围内，格子边上6像素不能点，避免误点
+	        //检测 可下棋步 check里面是否有点击的点
 	          if (Main.this.chess == 1)
 	            Main.this.g.drawImage(Main.this.blackchess.getImage(), this.r * 50 + 2, this.c * 50 + 2, 46, 46, null);
 	          else if (Main.this.chess == 0)
@@ -236,7 +244,7 @@ public class Main   extends JFrame
 	        {
 	          if (!Main.this.checkLaychess())
 	          {
-	            if (Main.this.chess == 1)
+	            if (Main.this.chess == BLACK)
 	              System.out.println("黑子没有地方可以下了");
 	            else
 	              System.out.println("白子没有地方可以下了");
@@ -271,13 +279,13 @@ public class Main   extends JFrame
 	              while (this.bot_continue)
 	              {
 	                Main.this.bot_judge();
-	                System.out.println(Main.this.bot_x + "   " + Main.this.bot_y);
+	                System.out.println("bot_judge= "+Main.this.bot_x + "   " + Main.this.bot_y);
 	                Main.this.checkLaychess();
 	                if (Main.this.chess == 1)
 	                  Main.this.g.drawImage(Main.this.blackchess.getImage(), Main.this.bot_x * 50 + 2, Main.this.bot_y * 50 + 2, 46, 46, null);
 	                else if (Main.this.chess == 0)
 	                  Main.this.g.drawImage(Main.this.whitechess.getImage(), Main.this.bot_x * 50 + 2, Main.this.bot_y * 50 + 2, 46, 46, null);
-	                Main.this.box[Main.this.bot_x][Main.this.bot_y] = chess;
+	                Main.this.box[bot_x][bot_y] = chess;
 
 	                Main.this.flipchess(Main.this.bot_x, Main.this.bot_y);
 	                Main.this.countChess();
@@ -307,6 +315,7 @@ public class Main   extends JFrame
 	                    Main.this.g_nowchess.drawImage(Main.this.blackchess.getImage(), 0, 0, 46, 46, null);
 	                  else if (Main.this.chess == 0)
 	                    Main.this.g_nowchess.drawImage(Main.this.whitechess.getImage(), 0, 0, 46, 46, null);
+	                  drawCheckPoint();
 	                  this.bot_continue = false;
 	                }
 	              }
@@ -360,6 +369,7 @@ public class Main   extends JFrame
 	          else if (Main.this.chess == 0)
 	            Main.this.g_nowchess.drawImage(Main.this.whitechess.getImage(), 0, 0, 46, 46, null);
 	          Main.this.checkLaychess();
+	          drawCheckPoint();
 	        }
 	      }
 	    });
@@ -376,6 +386,7 @@ public class Main   extends JFrame
 
 	    this.AI = true;
 	    this.end = true;
+	    
 	  }
 
 	  public void setInit()
@@ -396,9 +407,9 @@ public class Main   extends JFrame
 	      {
 	        if (this.box[i][j] < 0)
 	          continue;
-	        if (this.box[i][j] == 1)
+	        if (this.box[i][j] == BLACK)
 	          this.g.drawImage(this.blackchess.getImage(), i * 50 + 2, j * 50 + 2, 46, 46, null);
-	        if (this.box[i][j] == 0) {
+	        if (this.box[i][j] == WHITE) {
 	          this.g.drawImage(this.whitechess.getImage(), i * 50 + 2, j * 50 + 2, 46, 46, null);
 	        }
 	      }
@@ -406,6 +417,10 @@ public class Main   extends JFrame
 	    this.g_nowchess.drawImage(this.blackchess.getImage(), 0, 0, 46, 46, null);
 	  }
 
+	  /**
+	   * 检测是可以下棋
+	   * @return
+	   */
 	  public boolean checkLaychess()
 	  {
 	    boolean ok = false;
@@ -420,7 +435,9 @@ public class Main   extends JFrame
 
 	        if (i != 0)
 	        {
-	          for (int k = i - 1; (k > 0) && (this.box[k][j] == 1 - this.chess); k--)
+	          for (int k = i - 1; (k > 0) && (this.box[k][j] == 1 - this.chess); ){
+	        	  k--;
+	         
 	          if ((k != i - 1) && (this.box[k][j] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -430,10 +447,12 @@ public class Main   extends JFrame
 	          else {
 	            this.up[i][j] = 0;
 	          }
+	          }
 	        }
 	        if (i != 7)
 	        {
-	          for (int k = i + 1; (k < 7) && (this.box[k][j] == 1 - this.chess); k++)
+	          for (int k = i + 1; (k < 7) && (this.box[k][j] == 1 - this.chess); ){
+	        	  k++;
 	          if ((k != i + 1) && (this.box[k][j] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -444,9 +463,11 @@ public class Main   extends JFrame
 	            this.down[i][j] = 0;
 	          }
 	        }
+	        }
 	        if (j != 0)
 	        {
-	          for (int k = j - 1; (k > 0) && (this.box[i][k] == 1 - this.chess); k--)
+	          for (int k = j - 1; (k > 0) && (this.box[i][k] == 1 - this.chess); ){
+	        	  k--;
 	          if ((k != j - 1) && (this.box[i][k] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -456,10 +477,12 @@ public class Main   extends JFrame
 	          else {
 	            this.left[i][j] = 0;
 	          }
+	          }
 	        }
 	        if (j != 7)
 	        {
-	          for (int k = j + 1; (k < 7) && (this.box[i][k] == 1 - this.chess); k++)
+	          for (int k = j + 1; (k < 7) && (this.box[i][k] == 1 - this.chess); ){
+	        	  k++;
 	          if ((k != j + 1) && (this.box[i][k] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -470,10 +493,13 @@ public class Main   extends JFrame
 	            this.right[i][j] = 0;
 	          }
 	        }
+	        }
 	        if ((i != 0) && (j != 0))
 	        {
 	          int k = i - 1; 
-	          for (int m = j - 1; (k > 0) && (m > 0) && (this.box[k][m] == 1 - this.chess); m--){
+	          for (int m = j - 1; (k > 0) && (m > 0) && (this.box[k][m] == 1 - this.chess);){
+	        	 k--;
+	        	 m--;
 	          if ((k != i - 1) && (this.box[k][m] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -483,13 +509,14 @@ public class Main   extends JFrame
 	          else {
 	            this.upleft[i][j] = 0;
 	          }
-	          k--;
 	        }
 	        }
 	        if ((i != 0) && (j != 7))
 	        {
 	          int k = i - 1; 
-	          for (int m = j + 1; (k > 0) && (m < 7) && (this.box[k][m] == 1 - this.chess); m++){
+	          for (int m = j + 1; (k > 0) && (m < 7) && (this.box[k][m] == 1 - this.chess); ){
+	        	  k--;
+	        	  m++;
 	          if ((k != i - 1) && (this.box[k][m] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -499,14 +526,13 @@ public class Main   extends JFrame
 	          else {
 	            this.upright[i][j] = 0;
 	          }
-	          k--;
 	        }
 	        }
 	        if ((i != 7) && (j != 0))
 	        {
-	          int k = i + 1; for (int m = j - 1; (k < 7) && (m > 0) && (this.box[k][m] == 1 - this.chess); m--){
+	          int k = i + 1; for (int m = j - 1; (k < 7) && (m > 0) && (this.box[k][m] == 1 - this.chess); ){
 	        	  k++;
-	         
+	        	  m--;
 	          if ((k != i + 1) && (this.box[k][m] == this.chess))
 	          {
 	            this.check[i][j] = 1;
@@ -520,8 +546,9 @@ public class Main   extends JFrame
 	        }
 	        if ((i == 7) || (j == 7))
 	          continue;
-	        int k = i + 1; 
-	        for (int m = j + 1; (k < 7) && (m < 7) && (this.box[k][m] == 1 - this.chess); m++){
+	        int k = i + 1; for (int m = j + 1; (k < 7) && (m < 7) && (this.box[k][m] == 1 - this.chess); ){
+	        	k++;
+	        	m++;
 	        if ((k != i + 1) && (this.box[k][m] == this.chess))
 	        {
 	          this.check[i][j] = 1;
@@ -531,7 +558,6 @@ public class Main   extends JFrame
 	        else {
 	          this.downright[i][j] = 0;
 	        }
-	        k++;
 	      }
 	      }
 	    return ok;
@@ -669,7 +695,8 @@ public class Main   extends JFrame
 	    }
 	    if (i != 0)
 	    {
-	      for (int k = i - 1; (k > 0) && (chessboard[k][j] == 1 - color); k--)
+	      for (int k = i - 1; (k > 0) && (chessboard[k][j] == 1 - color); ){
+	    	  k--;
 	      if ((k != i - 1) && (chessboard[k][j] == color))
 	      {
 	        this.up[i][j] = 1;
@@ -678,10 +705,12 @@ public class Main   extends JFrame
 	      else {
 	        this.up[i][j] = 0;
 	      }
+	      }
 	    }
 	    if (i != 7)
 	    {
-	      for (int k = i + 1; (k < 7) && (chessboard[k][j] == 1 - color); k++)
+	      for (int k = i + 1; (k < 7) && (chessboard[k][j] == 1 - color); ){
+	    	  k++;
 	      if ((k != i + 1) && (chessboard[k][j] == color))
 	      {
 	        this.down[i][j] = 1;
@@ -690,10 +719,12 @@ public class Main   extends JFrame
 	      else {
 	        this.down[i][j] = 0;
 	      }
+	      }
 	    }
 	    if (j != 0)
 	    {
-	      for (int k = j - 1; (k > 0) && (chessboard[i][k] == 1 - color); k--)
+	      for (int k = j - 1; (k > 0) && (chessboard[i][k] == 1 - color); ){
+	    	  k--;
 	      if ((k != j - 1) && (chessboard[i][k] == color))
 	      {
 	        this.left[i][j] = 1;
@@ -702,10 +733,12 @@ public class Main   extends JFrame
 	      else {
 	        this.left[i][j] = 0;
 	      }
+	      }
 	    }
 	    if (j != 7)
 	    {
-	      for (int k = j + 1; (k < 7) && (chessboard[i][k] == 1 - color); k++)
+	      for (int k = j + 1; (k < 7) && (chessboard[i][k] == 1 - color); ){
+	    	  k++;
 	      if ((k != j + 1) && (chessboard[i][k] == color))
 	      {
 	        this.right[i][j] = 1;
@@ -714,11 +747,14 @@ public class Main   extends JFrame
 	      else {
 	        this.right[i][j] = 0;
 	      }
+	      }
 	    }
 	    if ((i != 0) && (j != 0))
 	    {
 	      int k = i - 1; 
-	      for (int m = j - 1; (k > 0) && (m > 0) && (chessboard[k][m] == 1 - color); m--){
+	      for (int m = j - 1; (k > 0) && (m > 0) && (chessboard[k][m] == 1 - color); ){
+	    	  k--;
+	    	  m--;
 	      if ((k != i - 1) && (chessboard[k][m] == color))
 	      {
 	        this.upleft[i][j] = 1;
@@ -727,13 +763,14 @@ public class Main   extends JFrame
 	      else {
 	        this.upleft[i][j] = 0;
 	      }
-	      k--;
 	    }
 	    }
 	    if ((i != 0) && (j != 7))
 	    {
 	      int k = i - 1; 
-	      for (int m = j + 1; (k > 0) && (m < 7) && (chessboard[k][m] == 1 - color); m++){
+	      for (int m = j + 1; (k > 0) && (m < 7) && (chessboard[k][m] == 1 - color);){
+	    	  k--;
+	    	  m++;
 	      if ((k != i - 1) && (chessboard[k][m] == color))
 	      {
 	        this.upright[i][j] = 1;
@@ -742,12 +779,13 @@ public class Main   extends JFrame
 	      else {
 	        this.upright[i][j] = 0;
 	      }
-	      k--;
 	    }
 	    }
 	    if ((i != 7) && (j != 0))
 	    {
-	      int k = i + 1; for (int m = j - 1; (k < 7) && (m > 0) && (chessboard[k][m] == 1 - color); m--){
+	      int k = i + 1; for (int m = j - 1; (k < 7) && (m > 0) && (chessboard[k][m] == 1 - color); ){
+	    	  k++;
+	    	  m--;
 	      if ((k != i + 1) && (chessboard[k][m] == color))
 	      {
 	        this.downleft[i][j] = 1;
@@ -756,12 +794,13 @@ public class Main   extends JFrame
 	      else {
 	        this.downleft[i][j] = 0;
 	      }
-	      k++;
 	    }
 	    }
 	    if ((i != 7) && (j != 7))
 	    {
-	      int k = i + 1; for (int m = j + 1; (k < 7) && (m < 7) && (chessboard[k][m] == 1 - color); m++){
+	      int k = i + 1; for (int m = j + 1; (k < 7) && (m < 7) && (chessboard[k][m] == 1 - color); ){
+	    	  k++;
+	    	  m++;
 	      if ((k != i + 1) && (chessboard[k][m] == color))
 	      {
 	        this.downright[i][j] = 1;
@@ -770,7 +809,6 @@ public class Main   extends JFrame
 	      else {
 	        this.downright[i][j] = 0;
 	      }
-	      k++;
 	    }
 	    }
 	    return ok;
@@ -818,7 +856,7 @@ public class Main   extends JFrame
 	  {
 	    if (branches == 0)
 	    {
-	      int a1 = 0;
+	      int a1 = 0;//每个位置的权值和
 	      for (int i = 0; i < 8; i++) {
 	        for (int j = 0; j < 8; j++)
 	        {
@@ -829,7 +867,7 @@ public class Main   extends JFrame
 	          }
 	        }
 	      }
-	      int a2 = judgeStatic(chessboard);
+	      int a2 = judgeStatic(chessboard);//边缘子的数量
 
 	      int p1 = 3; int p2 = 7;
 
@@ -863,7 +901,8 @@ public class Main   extends JFrame
 
 	        if (i != 0)
 	        {
-	          for (int k = i - 1; (k > 0) && (chessboard[k][j] == 1 - color); k--)
+	          for (int k = i - 1; (k > 0) && (chessboard[k][j] == 1 - color); ){
+	        	  k--;
 	          if ((k != i - 1) && (chessboard[k][j] == color))
 	          {
 	            q_up[rear] = 1;
@@ -872,10 +911,12 @@ public class Main   extends JFrame
 	          else {
 	            q_up[rear] = 0;
 	          }
+	          }
 	        }
 	        if (i != 7)
 	        {
-	          for (int k = i + 1; (k < 7) && (chessboard[k][j] == 1 - color); k++)
+	          for (int k = i + 1; (k < 7) && (chessboard[k][j] == 1 - color); ){
+	        	  k++;
 	          if ((k != i + 1) && (chessboard[k][j] == color))
 	          {
 	            q_down[rear] = 1;
@@ -884,10 +925,12 @@ public class Main   extends JFrame
 	          else {
 	            q_down[rear] = 0;
 	          }
+	          }
 	        }
 	        if (j != 0)
 	        {
-	          for (int k = j - 1; (k > 0) && (chessboard[i][k] == 1 - color); k--)
+	          for (int k = j - 1; (k > 0) && (chessboard[i][k] == 1 - color); ){
+	        	  k--;
 	          if ((k != j - 1) && (chessboard[i][k] == color))
 	          {
 	            q_left[rear] = 1;
@@ -896,10 +939,12 @@ public class Main   extends JFrame
 	          else {
 	            q_left[rear] = 0;
 	          }
+	          }
 	        }
 	        if (j != 7)
 	        {
-	          for (int k = j + 1; (k < 7) && (chessboard[i][k] == 1 - color); k++)
+	          for (int k = j + 1; (k < 7) && (chessboard[i][k] == 1 - color); ){
+	        	  k++;
 	          if ((k != j + 1) && (chessboard[i][k] == color))
 	          {
 	            q_right[rear] = 1;
@@ -908,13 +953,14 @@ public class Main   extends JFrame
 	          else {
 	            q_right[rear] = 0;
 	          }
+	          }
 	        }
 	        if ((i != 0) && (j != 0))
 	        {
 	          int k = i - 1; 
-	          for (int m = j - 1; (k > 0) && (m > 0) && (chessboard[k][m] == 1 - color); m--){
+	          for (int m = j - 1; (k > 0) && (m > 0) && (chessboard[k][m] == 1 - color);){
 	        	  k--;
-	         
+	        	  m--;
 	          if ((k != i - 1) && (chessboard[k][m] == color))
 	          {
 	            q_upleft[rear] = 1;
@@ -928,9 +974,9 @@ public class Main   extends JFrame
 	        if ((i != 0) && (j != 7))
 	        {
 	          int k = i - 1; 
-	          for (int m = j + 1; (k > 0) && (m < 7) && (chessboard[k][m] == 1 - color); m++){
+	          for (int m = j + 1; (k > 0) && (m < 7) && (chessboard[k][m] == 1 - color);){
 	        	  k--;
-	          
+	        	  m++;
 	          if ((k != i - 1) && (chessboard[k][m] == color))
 	          {
 	            q_upright[rear] = 1;
@@ -944,9 +990,9 @@ public class Main   extends JFrame
 	        if ((i != 7) && (j != 0))
 	        {
 	          int k = i + 1; 
-	          for (int m = j - 1; (k < 7) && (m > 0) && (chessboard[k][m] == 1 - color); m--){
+	          for (int m = j - 1; (k < 7) && (m > 0) && (chessboard[k][m] == 1 - color); ){
 	        	  k++;
-	          
+	        	  m--;
 	          if ((k != i + 1) && (chessboard[k][m] == color))
 	          {
 	            q_downleft[rear] = 1;
@@ -960,9 +1006,9 @@ public class Main   extends JFrame
 	        if ((i != 7) && (j != 7))
 	        {
 	          int k = i + 1; 
-	          for (int m = j + 1; (k < 7) && (m < 7) && (chessboard[k][m] == 1 - color); m++){
+	          for (int m = j + 1; (k < 7) && (m < 7) && (chessboard[k][m] == 1 - color); ){
 	        	  k++;
-	         
+	        	  m++;
 	          if ((k != i + 1) && (chessboard[k][m] == color))
 	          {
 	            q_downright[rear] = 1;
@@ -1194,4 +1240,19 @@ public class Main   extends JFrame
 	        this.bot_y = j;
 	      }
 	  }
+	  
+	  private void drawCheckPoint(){
+		  System.out.println("drawCheckPoint");
+		     for(int i=0;i<8;i++){{
+		    	 for(int j=0;j<8;j++){
+		    		 if(check[i][j]==1){
+		    			 g.setColor(Color.green);
+		    			 g.fillOval(i* 50 + 20, j* 50 + 20, 10, 10);
+		    		 }
+		    		 
+		    	 }
+		     }
+         }
+	  }
+	  
 	}
