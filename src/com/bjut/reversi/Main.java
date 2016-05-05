@@ -43,6 +43,7 @@ public class Main   extends JFrame
 	  private ImageIcon blackchess = new ImageIcon(Main.class.getResource("images/blackchess.png"));
 	  private ImageIcon whitechess = new ImageIcon(Main.class.getResource("images/whitechess.png"));
 	  private int[][] box = new int[8][8];//棋盘
+	  /**可下棋数组*/
 	  private int[][] check = new int[8][8];
 	  private int[][] up = new int[8][8];
 	  private int[][] down = new int[8][8];
@@ -418,8 +419,8 @@ public class Main   extends JFrame
 	  }
 
 	  /**
-	   * 检测是可以下棋
-	   * @return
+	   * 检测是可以下棋，设置可下棋数组{@link #check}
+	   * @return 是否可下棋
 	   */
 	  public boolean checkLaychess()
 	  {
@@ -429,12 +430,12 @@ public class Main   extends JFrame
 	      {
 	        this.check[i][j] = 0;
 	        if (this.box[i][j] != -1)
-	        {
+	        {//不为空跳过
 	          continue;
 	        }
 
 	        if (i != 0)
-	        {
+	        {//判断该点的上面棋是否可下
 	          for (int k = i - 1; (k > 0) && (this.box[k][j] == 1 - this.chess); ){
 	        	  k--;
 	         
@@ -450,7 +451,7 @@ public class Main   extends JFrame
 	          }
 	        }
 	        if (i != 7)
-	        {
+	        {//判断该点的下面棋是否可下
 	          for (int k = i + 1; (k < 7) && (this.box[k][j] == 1 - this.chess); ){
 	        	  k++;
 	          if ((k != i + 1) && (this.box[k][j] == this.chess))
@@ -465,7 +466,7 @@ public class Main   extends JFrame
 	        }
 	        }
 	        if (j != 0)
-	        {
+	        {//判断该点的左侧棋是否可下
 	          for (int k = j - 1; (k > 0) && (this.box[i][k] == 1 - this.chess); ){
 	        	  k--;
 	          if ((k != j - 1) && (this.box[i][k] == this.chess))
@@ -480,7 +481,7 @@ public class Main   extends JFrame
 	          }
 	        }
 	        if (j != 7)
-	        {
+	        {//判断该点的右侧棋是否可下
 	          for (int k = j + 1; (k < 7) && (this.box[i][k] == 1 - this.chess); ){
 	        	  k++;
 	          if ((k != j + 1) && (this.box[i][k] == this.chess))
@@ -529,7 +530,7 @@ public class Main   extends JFrame
 	        }
 	        }
 	        if ((i != 7) && (j != 0))
-	        {
+	        {//判断该点的左下棋是否可下
 	          int k = i + 1; for (int m = j - 1; (k < 7) && (m > 0) && (this.box[k][m] == 1 - this.chess); ){
 	        	  k++;
 	        	  m--;
@@ -562,7 +563,11 @@ public class Main   extends JFrame
 	      }
 	    return ok;
 	  }
-
+	  /**
+	   * 翻转棋子
+	   * @param r 选中的x坐标
+	   * @param c 选中的Y坐标
+	   */
 	  public void flipchess(int r, int c)
 	  {
 	    if (this.up[r][c] == 1)
@@ -672,7 +677,9 @@ public class Main   extends JFrame
 	      }
 	    }
 	  }
-
+	  /**
+	   * 数棋子数
+	   */
 	  public void countChess()
 	  {
 	    this.blacknumber = this.whitenumber = 0;
@@ -686,7 +693,14 @@ public class Main   extends JFrame
 	      }
 	    System.out.println("现在黑子有" + this.blacknumber + "个，白子有" + this.whitenumber + "个");
 	  }
-
+	  /**
+	   * 判断是否可以在 (i,j)点下棋
+	   * @param i
+	   * @param j
+	   * @param chessboard
+	   * @param color
+	   * @return 判断是否可以 下棋
+	   */
 	  public boolean judgeLaychess(int i, int j, int[][] chessboard, int color)
 	  {
 	    boolean ok = false;
@@ -698,7 +712,7 @@ public class Main   extends JFrame
 	      for (int k = i - 1; (k > 0) && (chessboard[k][j] == 1 - color); ){
 	    	  k--;
 	      if ((k != i - 1) && (chessboard[k][j] == color))
-	      {
+	      {//判断该点的上面棋是否可下
 	        this.up[i][j] = 1;
 	        ok = true;
 	      }
@@ -712,7 +726,7 @@ public class Main   extends JFrame
 	      for (int k = i + 1; (k < 7) && (chessboard[k][j] == 1 - color); ){
 	    	  k++;
 	      if ((k != i + 1) && (chessboard[k][j] == color))
-	      {
+	      {//判断该点的下面棋是否可下
 	        this.down[i][j] = 1;
 	        ok = true;
 	      }
@@ -814,6 +828,13 @@ public class Main   extends JFrame
 	    return ok;
 	  }
 
+	  /**
+	   * 判断局势<br/>
+	   * 根据自己棋上下左右是否可下棋减，对方棋上下左右是否可下棋加<br>
+	   * 此处是否可优化为 周围8个位置都判断，因为斜角也是可以下棋
+	   * @param chessboard
+	   * @return 返回局势
+	   */
 	  public int judgeStatic(int[][] chessboard)
 	  {
 	    int ans = 0;
@@ -824,6 +845,7 @@ public class Main   extends JFrame
 	        boolean flag = false;
 	        if (chessboard[i][j] == this.chess)
 	        {
+	        //TODO 此处只判断了上下左右，是否需要判断周围8个方向更为准确
 	          if ((i > 0) && (chessboard[(i - 1)][j] == -1))
 	            flag = true;
 	          else if ((i < 7) && (chessboard[(i + 1)][j] == -1))
@@ -852,10 +874,26 @@ public class Main   extends JFrame
 	    return ans;
 	  }
 
+	 /**
+	  * 关键方法<br>
+	  * 判断所下棋的质量<br>
+	  * 根据公式  ans = p1 * a1 + p2 * a2;<br>
+	  * p1 = 3;   p2 = 7;<br>
+	  * a1 每个位置的权值和<br>
+	  * a2  边缘子的数量<br>
+	  * @param color 下棋颜色
+	  * @param branches 分支数
+	  * @param chessboard 棋盘
+	  * @param stop 是否跳过
+	  * @param a 最小值
+	  * @param b 最大值
+	  * @param fa 下步的颜色
+	  * @return 估值
+	  */
 	  public int dfs(int color, int branches, int[][] chessboard, boolean stop, int a, int b, int fa)
 	  {
 	    if (branches == 0)
-	    {
+	    {//分支数为0 根据 公式计算 估值
 	      int a1 = 0;//每个位置的权值和
 	      for (int i = 0; i < 8; i++) {
 	        for (int j = 0; j < 8; j++)
@@ -875,13 +913,13 @@ public class Main   extends JFrame
 
 	      return ans;
 	    }
-
+	    //剪枝算法
 	    int min = this.INF;
 	    int max = -this.INF;
 
-	    int rear = 0;
-	    int[] q_x = new int[64];
-	    int[] q_y = new int[64];
+	    int rear = 0;//可以下的棋数
+	    int[] q_x = new int[64];//可下棋x点
+	    int[] q_y = new int[64];//可下棋y点
 	    int[] q_up = new int[64];
 	    int[] q_down = new int[64];
 	    int[] q_left = new int[64];
@@ -891,6 +929,7 @@ public class Main   extends JFrame
 	    int[] q_downleft = new int[64];
 	    int[] q_downright = new int[64];
 
+	    //下面是计算所有可以下的棋点
 	    for (int i = 0; i < 8; i++) {
 	      for (int j = 0; j < 8; j++)
 	      {
@@ -1028,6 +1067,7 @@ public class Main   extends JFrame
 
 	    }
 
+	    //判断每个棋点的最大最小估值
 	    for (int q = 0; q < rear; q++)
 	    {
 	      int[][] board = new int[8][8];
@@ -1138,12 +1178,13 @@ public class Main   extends JFrame
 	        }
 	      }
 	    }
+	    //如果无棋可下
 	    if (rear == 0)
-	    {
+	    {//判断对方的棋
 	      if (!stop) {
 	        return dfs(fa, branches, chessboard, true, a, b, fa);
 	      }
-
+	      //无棋可下时，判断双方棋子数
 	      int bot_chess = 0; int player_chess = 0;
 	      for (int i = 0; i < 8; i++)
 	        for (int j = 0; j < 8; j++)
@@ -1153,13 +1194,13 @@ public class Main   extends JFrame
 	          else if (chessboard[i][j] == 1 - this.chess)
 	            player_chess++;
 	        }
-	      if (bot_chess > player_chess)
+	      if (bot_chess > player_chess){
 	        return this.INF / 10;
-	      if (player_chess > bot_chess) {
+	      }else{
 	        return -this.INF / 10;
 	      }
-	      return 0;
 	    }
+	    //如果自己的棋取最大，对方棋取最小估值
 	    int ans;
 	    if (color == 1 - this.chess)
 	      ans = min;
@@ -1168,6 +1209,9 @@ public class Main   extends JFrame
 	    return ans;
 	  }
 
+	  /**
+	   * AI 判断 哪个棋点估值最高
+	   */
 	  public void bot_judge()
 	  {
 	    int max_value = -this.INF;
