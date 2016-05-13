@@ -3,7 +3,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Player{
+public class Player implements IPlayer{
 	
 	public boolean amIBlack;
 	int board[][];
@@ -12,7 +12,11 @@ public class Player{
 		board = new int[9][9];//9 X 9Êý×é£¬º¬ÓÐ8 X 8ÆåÅÌ
 		boardInit();
 	}
-		
+	@Override
+	public boolean isBlack() {
+		return amIBlack;
+	}	
+	@Override
 	public String readMessage(String message){
 		String myMessage = "NO";
 		
@@ -247,5 +251,6 @@ public class Player{
 		}
 		return false;
 	}
+
 
 }

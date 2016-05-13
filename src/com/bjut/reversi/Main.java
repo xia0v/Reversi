@@ -60,7 +60,7 @@ public class Main   extends JFrame
 	  private int blacknumber;//黑棋数量
 	  private boolean end;//是否已结束
 	  private boolean AI;//是否AI
-	  private JPanel jp_nowchess;
+	  private JPanel jp_nowchess;//当前棋手颜色
 	  private int[][] cellpoints = { 
 	    { 100, -5, 10, 5, 5, 10, -5, 100 }, 
 	    { -5, -45, 1, 1, 1, 1, -45, -5 }, 
@@ -100,7 +100,7 @@ public class Main   extends JFrame
 	      public void paint(Graphics g)
 	      {
 	        super.paint(g);
-	        System.out.println("jp_play paint");
+	        MLog.i("jp_play paint");
 	        g.drawImage(Main.this.chessboard.getImage(), 0, 0, getWidth(), getHeight(), null);
 	        if (Main.this.box != null)
 	          for (int i = 0; i < Main.this.box.length; i++)
@@ -217,7 +217,7 @@ public class Main   extends JFrame
 
 	      public void mouseReleased(MouseEvent e) { if (Main.this.end)
 	        {
-	          System.out.println("游戏已经结束啦");
+	          MLog.i("游戏已经结束啦");
 	          return;
 	        }
 	        this.flag = false;
@@ -234,7 +234,7 @@ public class Main   extends JFrame
 	            Main.this.g.drawImage(Main.this.whitechess.getImage(), this.r * 50 + 2, this.c * 50 + 2, 46, 46, null);
 	          Main.this.box[this.r][this.c] = chess;
 
-	          System.out.println("玩家：  " + this.r + "   " + this.c);
+	          MLog.i("玩家：  " + this.r + "   " + this.c);
 	          Main.this.flipchess(this.r, this.c);
 	          Main.this.countChess();
 	          Main.this.chess = (1 - Main.this.chess);
@@ -246,14 +246,14 @@ public class Main   extends JFrame
 	          if (!Main.this.checkLaychess())
 	          {
 	            if (Main.this.chess == BLACK)
-	              System.out.println("黑子没有地方可以下了");
+	              MLog.i("黑子没有地方可以下了");
 	            else
-	              System.out.println("白子没有地方可以下了");
+	              MLog.i("白子没有地方可以下了");
 	            Main.this.chess = (1 - Main.this.chess);
 	            if (!Main.this.checkLaychess())
 	            {
 	              Main.this.chess = (1 - Main.this.chess);
-	              System.out.println("双方都没有地方可以下了");
+	              MLog.i("双方都没有地方可以下了");
 	              if (Main.this.blacknumber > Main.this.whitenumber)
 	                JOptionPane.showMessageDialog(null, "最终结果是:黑子" + Main.this.blacknumber + "个，白子" + Main.this.whitenumber + "个，黑棋胜！");
 	              else if (Main.this.blacknumber < Main.this.whitenumber)
@@ -280,7 +280,7 @@ public class Main   extends JFrame
 	              while (this.bot_continue)
 	              {
 	                Main.this.bot_judge();
-	                System.out.println("bot_judge= "+Main.this.bot_x + "   " + Main.this.bot_y);
+	                MLog.i("bot_judge= "+Main.this.bot_x + "   " + Main.this.bot_y);
 	                Main.this.checkLaychess();
 	                if (Main.this.chess == 1)
 	                  Main.this.g.drawImage(Main.this.blackchess.getImage(), Main.this.bot_x * 50 + 2, Main.this.bot_y * 50 + 2, 46, 46, null);
@@ -294,14 +294,14 @@ public class Main   extends JFrame
 	                if (!Main.this.checkLaychess())
 	                {
 	                  if (Main.this.chess == 1)
-	                    System.out.println("黑子没有地方可以下了");
+	                    MLog.i("黑子没有地方可以下了");
 	                  else
-	                    System.out.println("白子没有地方可以下了");
+	                    MLog.i("白子没有地方可以下了");
 	                  Main.this.chess = (1 - Main.this.chess);
 	                  if (Main.this.checkLaychess())
 	                    continue;
 	                  this.bot_continue = false;
-	                  System.out.println("双方都没有地方可以下了");
+	                  MLog.i("双方都没有地方可以下了");
 	                  if (Main.this.blacknumber > Main.this.whitenumber)
 	                    JOptionPane.showMessageDialog(null, "最终结果是:黑子" + Main.this.blacknumber + "个，白子" + Main.this.whitenumber + "个，黑棋胜！");
 	                  else if (Main.this.blacknumber < Main.this.whitenumber)
@@ -691,7 +691,7 @@ public class Main   extends JFrame
 	        else if (this.box[i][j] == 0)
 	          this.whitenumber += 1;
 	      }
-	    System.out.println("现在黑子有" + this.blacknumber + "个，白子有" + this.whitenumber + "个");
+	    MLog.i("现在黑子有" + this.blacknumber + "个，白子有" + this.whitenumber + "个");
 	  }
 	  /**
 	   * 判断是否可以在 (i,j)点下棋
@@ -1066,7 +1066,7 @@ public class Main   extends JFrame
 	      }
 
 	    }
-
+	    int index=0;
 	    //判断每个棋点的最大最小估值
 	    for (int q = 0; q < rear; q++)
 	    {
@@ -1123,9 +1123,7 @@ public class Main   extends JFrame
 	          r++;
 	        }
 	      }
-
 	      int temp = dfs(1 - color, branches / rear, board, false, a, b, color);
-
 	      if (fa == this.chess)
 	      {
 	        if (color == 1 - this.chess)
@@ -1217,6 +1215,7 @@ public class Main   extends JFrame
 	    int max_value = -this.INF;
 	    int a = -this.INF; int b = this.INF;
 	    this.bot_x = (this.bot_y = -1);
+	    int index=0;
 	    for (int i = 0; i < 8; i++)
 	      for (int j = 0; j < 8; j++) {
 	        if (!judgeLaychess(i, j, this.box, this.chess))
@@ -1273,8 +1272,9 @@ public class Main   extends JFrame
 	            r++;
 	          }
 	        }
-	        int temp = dfs(1 - color, this.BRANCHES, board, false, a, b, color);
-
+	        int temp = dfs(1 - color, 10, board, false, a, b, color);
+	        MLog.i("1branches:"+index+" ans="+temp+" x:"+i+" y:"+j+" color:"+(color==BLACK?"黑":"白"));
+	        index++;
 	        if (temp > a)
 	          a = temp;
 	        if (temp <= max_value)
@@ -1282,11 +1282,11 @@ public class Main   extends JFrame
 	        max_value = temp;
 	        this.bot_x = i;
 	        this.bot_y = j;
+	        
 	      }
 	  }
 	  
 	  private void drawCheckPoint(){
-		  System.out.println("drawCheckPoint");
 		     for(int i=0;i<8;i++){{
 		    	 for(int j=0;j<8;j++){
 		    		 if(check[i][j]==1){

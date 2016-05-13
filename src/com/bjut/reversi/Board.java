@@ -1,10 +1,13 @@
 package com.bjut.reversi;
 
+import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,31 +19,49 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class Board extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	public static final int WHITE=1;//1表示白方
 	public static final int BLACK=-1;//-1表示黑方
 	public static final int SPACE=0;//0表示空
-	private int playColor = WHITE;//选手颜色
-	private Player player1;
+	private int playColor = BLACK;//选手颜色
+	
+	private boolean end;//是否已结束
+	private boolean isBVB;//是否AI对决
+	private IPlayer player1;
+	private IPlayer player2;
 	private String myMessage = "NO";//点击输出的内容
+	private JPanel boradLayout;//棋板布局
+	private JButton jpNowchess;//当前棋手颜色
 	
 	private Component[][] boardView = new Component[9][9];//棋盤
-	private int board[][] = new int[9][9];
+	private int board[][] = new int[8][8];//所有棋子
+	
+	
 	
 	public Board() {
-		 this.setLayout(new GridLayout(9, 9));
+		 this.setLayout(new BorderLayout());
 		 this.setTitle("黑白棋");
-		 this.setBounds(100, 100, 600, 600);  
+		 this.setBounds(100, 100, 780, 600);  
+		 boradLayout = new JPanel(new GridLayout(9, 9));
 		 initBoard();
 		 initBoardView();
+		 initMenu();
+		 this.add(boradLayout,"Center");
 		 this.setVisible(true); 
 		 this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 	}
-	public void setPlayer1(Player player){
+	
+	public void setPlayer1(IPlayer player){
 		this.player1 = player;
 	}
+	public void setPlayer2(IPlayer player){
+		this.player2 = player;
+	}
+	
 	
 /*	public static void main(String[] args) {
 		Board board = new Board();
@@ -48,7 +69,7 @@ public class Board extends JFrame implements ActionListener{
 	}*/
 	
 	public void readMessage(String message){
-		System.out.println("player = "+message);
+		MLog.i("player = "+message);
 		if(message.equals("BLACK")){//如果是BLACK，则表示是开局执黑
 			this.playColor = BLACK;
 			showDialog("执黑棋先走！");
@@ -58,29 +79,32 @@ public class Board extends JFrame implements ActionListener{
 		}else if(message.equals("NO")){
 			//对方上一步无棋可走
 		}else{//普通坐标
-			int xOpp=message.charAt(0)-'1'+1, yOpp = message.charAt(1)-'A'+1;
-			if(!this.player1.amIBlack){
+			int xOpp=message.charAt(0)-'1', yOpp = message.charAt(1)-'A';
+			if(this.player1.isBlack()){
 				//player1.modifyBoard(xOpp, yOpp, 1);
-				if(!this.pieceLegalJudge(xOpp, yOpp, WHITE, true))sendMessage("NO");
+				if(!this.pieceLegalJudge(xOpp, yOpp,BLACK, true))sendMessage("NO");
 			}
 			else{
 				//player1.modifyBoard(xOpp, yOpp, -1);
-				if(!this.pieceLegalJudge(xOpp, yOpp, BLACK, true))sendMessage("NO");
+				if(!this.pieceLegalJudge(xOpp, yOpp, WHITE, true))sendMessage("NO");
 			}
 		}
 	}
+	 
+
 	/**
 	 * 接受消息
 	 * @return
 	 */
-	public String getMessage(){
-		String message = "";
+	public String getMessage(String message){
+	/*	String message = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		try{
 			message= br.readLine();
 		}catch(IOException e){
 			e.printStackTrace();//获得输入失败
-		}
+		}*/
+		readMessage(player1.readMessage(message));
 		return message;
 	}
 	/**
@@ -91,34 +115,33 @@ public class Board extends JFrame implements ActionListener{
 		/*try {
 			System.in.read((message+"\n").getBytes());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-		System.out.println("board = "+message);//输出消息
+		MLog.i("board = "+message);//输出消息
 		readMessage(player1.readMessage(message));
 	}
 	
 	public void initBoard(){
-		for(int i=0;i<9;i++){//棋盘初始化，0表示空，1表示白，-1表示黑
-			for(int j=0;j<9;j++){
+		for(int i=0;i<8;i++){//棋盘初始化，0表示空，1表示白，-1表示黑
+			for(int j=0;j<8;j++){
 				board[i][j] = SPACE;
 			}
 		}
 		board[4][4] = WHITE;
-		board[5][5] = WHITE;
-		board[4][5] = BLACK;
-		board[5][4] = BLACK;
+		board[3][3] = WHITE;
+		board[4][3] = BLACK;
+		board[3][4] = BLACK;
 	}
 	/**
 	 * 初始化棋盤
 	 */
 	private void initBoardView(){
 		Label space = new Label();
-		this.add(space);
+		boradLayout.add(space);
 		boardView[0][0]=space;
 		for(int i =1;i<9;i++){
 			Label label = new Label("   "+(char)(i-1+'A'));  
-			this.add(label);
+			boradLayout.add(label);
 			boardView[0][i]=label;
 		}
 		
@@ -126,14 +149,14 @@ public class Board extends JFrame implements ActionListener{
 		 for(int j =0;j<9;j++){
 		  if(j==0){
 			Label label = new Label(""+i); 
-			this.add(label); 
+			boradLayout.add(label); 
 			boardView[i][0]=label;
 		  }else{
 			JButton btn = new JButton("");  
 			btn.setActionCommand(i+"_"+j);
 			btn.setBackground(Color.GRAY);
 			btn.addActionListener(this);
-			this.add(btn);  
+			boradLayout.add(btn);  
 			boardView[i][j]=btn;
 			}
 		 }
@@ -142,6 +165,118 @@ public class Board extends JFrame implements ActionListener{
 		boardView[5][5].setBackground(Color.WHITE);
 		boardView[4][5].setBackground(Color.BLACK);
 		boardView[5][4].setBackground(Color.BLACK);
+	}
+	private void resetBoard(){
+		initBoard();
+		for(int i =1;i<9;i++){
+			 for(int j =0;j<9;j++){
+			  if(j!=0){
+				boardView[i][j].setBackground(Color.GRAY);;
+				}
+			 }
+		}
+		boardView[4][4].setBackground(Color.WHITE);
+		boardView[5][5].setBackground(Color.WHITE);
+		boardView[4][5].setBackground(Color.BLACK);
+		boardView[5][4].setBackground(Color.BLACK);
+		player1.boardInit();
+	}
+	
+	private void initMenu() {
+		JPanel jpMenu = new JPanel();
+		jpMenu.setBackground(new Color(160, 207, 230));
+		jpMenu.setPreferredSize(new Dimension(150, 500));
+		jpMenu.setLayout(null);
+	    add(jpMenu, "East");
+	    JLabel jlb = new JLabel("当 前 执 子");
+	    jpMenu.add(jlb);
+	    jlb.setBounds(48, 80, 70, 20);
+	    jpNowchess = new  JButton("");  
+	    jpNowchess.setBackground(Color.BLACK);
+	    jpNowchess.setBounds(55, 110, 50, 50);
+	    jpMenu.add(jpNowchess);
+	    JButton restart = new JButton("重新开始");
+	    restart.setBounds(40, 350, 70, 30);
+	    jpMenu.add(restart);
+	    restart.addActionListener(restartListener);
+	    
+	    JButton bvb = new JButton("BVB");
+	    bvb.setBounds(40, 250, 70, 30);
+	    jpMenu.add(bvb);
+	    bvb.addActionListener(bvbListener);
+	    
+	    JButton pass = new JButton("PASS");
+	    pass.setBounds(40, 300, 70, 30);
+	    jpMenu.add(pass);
+	    pass.addActionListener(passListener);
+	}
+	/*
+	 * 重置按钮
+	 */
+	ActionListener restartListener  = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			showDialog("游戏重新开始");
+			resetBoard();
+			playColor = BLACK;
+			endGame =true;
+		}
+	};
+	/*
+	 * pass
+	 */
+	ActionListener passListener  = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			sendMessage("NO");
+		}
+	};
+	/*
+	 * bvb
+	 */
+	ActionListener bvbListener  = new ActionListener() {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			MLog.i("游戏开始");
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					bvb();
+				}
+			}).start();
+			
+		}
+	};
+	private boolean endGame;
+	
+	private void bvb(){
+		endGame =false;
+		IPlayer playerC = player1;
+		String message = playerC.readMessage("BLACK");
+		while(!endGame){
+			
+			MLog.i("player "+(playerC.isBlack()?"黑方：":"白方：")+message);
+			if(!"NO".equals(message)){
+				int x=message.charAt(0)-'1', y = message.charAt(1)-'A';
+				this.pieceLegalJudge(x, y, playerC.isBlack()?BLACK:WHITE, true);
+			}
+			playerC= playerC==player1?player2:player1;
+			jpNowchess.setBackground(playerC.isBlack()?Color.BLACK:Color.WHITE);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			String message2 = playerC.readMessage(message);
+			if("NO".equals(message)&&"NO".equals(message2)){
+				endGame =true;
+				MLog.i("player "+(playerC.isBlack()?"黑方：":"白方：")+message);
+			}
+			message = message2;
+		}
+		MLog.i("游戏结束");
+		this.showResult();
 	}
 	/**
 	 * @description 判断某个位置落某种颜色的棋子是否合法，同时能够选择性修改棋盘
@@ -153,6 +288,7 @@ public class Board extends JFrame implements ActionListener{
 	 */
 	public boolean pieceLegalJudge(int x, int y, int color,boolean modifyOrNot){
 		boolean flag = false;
+		
 		if(isInBounds(x,y) && SPACE==board[x][y]){//不越界且为空
 			int xStep=0,yStep=0;
 			for(int i=0; i<8; i++){//遍历八个方向，确定该位置是否合法
@@ -175,7 +311,7 @@ public class Board extends JFrame implements ActionListener{
 		}
 		if(flag && modifyOrNot){//如果合法且需要修改棋盘，则将这一点也修改
 			board[x][y] = color;
-			boardView[x][y].setBackground(color==WHITE?Color.WHITE:Color.BLACK);
+			boardView[x+1][y+1].setBackground(color==WHITE?Color.WHITE:Color.BLACK);
 		}
 		return flag;
 	}
@@ -231,7 +367,7 @@ public class Board extends JFrame implements ActionListener{
 		int xMv = xS, yMv = yS;//起始位置为第一个要修改的位置
 		while(board[xMv][yMv] != color){//当当前要修改的位置的颜色不是“终止颜色”时，循环继续
 			board[xMv][yMv] = color;//先把当前位置的颜色修改了
-			boardView[xMv][yMv].setBackground(color==WHITE?Color.WHITE:Color.BLACK);
+			boardView[xMv+1][yMv+1].setBackground(color==WHITE?Color.WHITE:Color.BLACK);
 			xMv += xMoveUnit;//位置指针移动到下一个位置
 			yMv += yMoveUnit;
 		}
@@ -240,14 +376,14 @@ public class Board extends JFrame implements ActionListener{
 	
 	public String changeCoordinateForm(int x, int y){
 		String str="";
-		str = Integer.toString(x) + (char)(y+'A'-1);
+		str = Integer.toString(x+1) + (char)(y+'A');
 		return str;
 	}
 	
 
 	public boolean isInBounds(int x, int y){//是否在界限内部，true表示在内部，false表示出界
 		
-		if(x>=1&&x<=8 && y>=1&&y<=8){
+		if(x>=0&&x<8 && y>=0&&y<8){
 			return true;
 		}
 		return false;
@@ -258,12 +394,16 @@ public class Board extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		String actionCommand = e.getActionCommand();
 		String[] xyStr = actionCommand.split("_");
-		int x = Integer.valueOf(xyStr[0]);
-		int y = Integer.valueOf(xyStr[1]);
-		boardView[x][y].setBackground(playColor==WHITE?Color.WHITE:Color.BLACK);
-		this.pieceLegalJudge(x, y, playColor, true);
-		String outMessage = changeCoordinateForm(x, y);
-		sendMessage(outMessage);
+		int x = Integer.valueOf(xyStr[0])-1;
+		int y = Integer.valueOf(xyStr[1])-1;
+		
+		if(pieceLegalJudge(x, y, playColor, true)){
+			board[x][y] = playColor;
+			boardView[x+1][y+1].setBackground(playColor==WHITE?Color.WHITE:Color.BLACK);
+			String outMessage = changeCoordinateForm(x, y);
+			sendMessage(outMessage);
+		}
+		
 	}
 
 	public Component[][] getBoard() {
@@ -273,17 +413,38 @@ public class Board extends JFrame implements ActionListener{
 	public void setBoard(Component[][] board) {
 		this.boardView = board;
 	}
+	public int[] resultCount(){
+		int bCount =0;
+		int wCount =0;
+		for(int i=0;i<8;i++){ 
+			for(int j=0;j<8;j++){
+				if(board[i][j] == BLACK){
+					bCount++;
+				}else{
+					wCount++;
+				}
+			}
+		}
+		return new int[]{bCount,wCount};
+	}
+	public void showResult(){
+		int[] result = resultCount();
+		String winner = result[0]>result[1]?"黑方":"白方";
+		showDialog("黑方："+result[0]+"，白方："+result[1]+"，胜利："+winner);
+	}
+	
 	/**
 	 * 彈出框
 	 * @param content
 	 */
 	public void showDialog(String content){
-		JDialog dialog = new JDialog(this);
+		/*JDialog dialog = new JDialog(this);
 		dialog.setTitle("提示");
 		dialog.getContentPane().add(new Label(content));
 		dialog.setLocation((int)(this.getLocation().getX()+this.getWidth())/2, (int)(getLocation().getY()+getHeight())/2);
 		dialog.setSize(200, 200);
-		dialog.setVisible(true);
+		dialog.setVisible(true);*/
+		JOptionPane.showMessageDialog(null, content);
 	}
 
 	public int getPlayColor() {
