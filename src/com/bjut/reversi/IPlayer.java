@@ -8,6 +8,8 @@ public interface IPlayer {
 	public String readMessage(String message);
 	
 	public boolean isBlack();
+	
+	public void setIsBlack(boolean isBlack);
 
 	public void boardInit();
 }

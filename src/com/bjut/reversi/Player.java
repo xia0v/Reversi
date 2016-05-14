@@ -17,6 +17,10 @@ public class Player implements IPlayer{
 		return amIBlack;
 	}	
 	@Override
+	public void setIsBlack(boolean isBlack) {
+		amIBlack = isBlack;
+	}
+	@Override
 	public String readMessage(String message){
 		String myMessage = "NO";
 		
@@ -70,12 +74,7 @@ public class Player implements IPlayer{
 	 * @param message
 	 */
 	public void sendMessage(String message){
-	/*	try {
-			System.in.read((message+"\n").getBytes());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
+	 
 		System.out.println(message);//Êä³öÏûÏ¢
 	}
 	

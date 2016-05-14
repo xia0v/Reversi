@@ -249,16 +249,24 @@ public class Board extends JFrame implements ActionListener{
 	};
 	private boolean endGame;
 	
+	/**
+	 * 默认BVB player1 白棋后手
+	 */
 	private void bvb(){
 		endGame =false;
-		IPlayer playerC = player1;
-		String message = playerC.readMessage("BLACK");
+		player1.boardInit();
+		player2.boardInit();
+		IPlayer playerC = player2;
+		 player1.readMessage("WHITE");
+		 String message = player2.readMessage("BLACK");
 		while(!endGame){
 			
-			MLog.i("player "+(playerC.isBlack()?"黑方：":"白方：")+message);
+			MLog.i((playerC.isBlack()?"黑方：":"白方：")+message);
 			if(!"NO".equals(message)){
 				int x=message.charAt(0)-'1', y = message.charAt(1)-'A';
-				this.pieceLegalJudge(x, y, playerC.isBlack()?BLACK:WHITE, true);
+				if(!this.pieceLegalJudge(x, y, playerC.isBlack()?BLACK:WHITE, true)){
+					MLog.i("数据异常");
+				}
 			}
 			playerC= playerC==player1?player2:player1;
 			jpNowchess.setBackground(playerC.isBlack()?Color.BLACK:Color.WHITE);
@@ -431,6 +439,7 @@ public class Board extends JFrame implements ActionListener{
 		int[] result = resultCount();
 		String winner = result[0]>result[1]?"黑方":"白方";
 		showDialog("黑方："+result[0]+"，白方："+result[1]+"，胜利："+winner);
+		MLog.i("黑方："+result[0]+"，白方："+result[1]+"，胜利："+winner);
 	}
 	
 	/**
@@ -454,4 +463,5 @@ public class Board extends JFrame implements ActionListener{
 	public void setPlayColor(int playColor) {
 		this.playColor = playColor;
 	}
+	
 }

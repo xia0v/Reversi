@@ -82,6 +82,7 @@ public class Main   extends JFrame
 
 	  public static void main(String[] args)
 	  {
+		MLog.DEBUG =true;
 	    Main frame = new Main();
 	    frame.init();
 	  }
@@ -380,7 +381,7 @@ public class Main   extends JFrame
 
 	    for (int i = 0; i < 8; i++)
 	      for (int j = 0; j < 8; j++)
-	        this.box[i][j] = -1;
+	        this.box[i][j] = SPACE;
 	    this.box[4][4] = this.box[3][3] = WHITE;
 	    this.box[4][3] = this.box[3][4] = BLACK;
 	    this.chess = 1;
@@ -429,7 +430,7 @@ public class Main   extends JFrame
 	      for (int j = 0; j < 8; j++)
 	      {
 	        this.check[i][j] = 0;
-	        if (this.box[i][j] != -1)
+	        if (this.box[i][j] != SPACE)
 	        {//不为空跳过
 	          continue;
 	        }
@@ -704,7 +705,7 @@ public class Main   extends JFrame
 	  public boolean judgeLaychess(int i, int j, int[][] chessboard, int color)
 	  {
 	    boolean ok = false;
-	    if (chessboard[i][j] != -1) {
+	    if (chessboard[i][j] != SPACE) {
 	      return ok;
 	    }
 	    if (i != 0)
@@ -846,26 +847,26 @@ public class Main   extends JFrame
 	        if (chessboard[i][j] == this.chess)
 	        {
 	        //TODO 此处只判断了上下左右，是否需要判断周围8个方向更为准确
-	          if ((i > 0) && (chessboard[(i - 1)][j] == -1))
+	          if ((i > 0) && (chessboard[(i - 1)][j] == SPACE))
 	            flag = true;
-	          else if ((i < 7) && (chessboard[(i + 1)][j] == -1))
+	          else if ((i < 7) && (chessboard[(i + 1)][j] == SPACE))
 	            flag = true;
-	          else if ((j > 0) && (chessboard[i][(j - 1)] == -1))
+	          else if ((j > 0) && (chessboard[i][(j - 1)] == SPACE))
 	            flag = true;
-	          else if ((j < 7) && (chessboard[i][(j + 1)] == -1))
+	          else if ((j < 7) && (chessboard[i][(j + 1)] == SPACE))
 	            flag = true;
 	          if (flag)
 	            ans--;
 	        } else {
 	          if (chessboard[i][j] != 1 - this.chess)
 	            continue;
-	          if ((i > 0) && (chessboard[(i - 1)][j] == -1))
+	          if ((i > 0) && (chessboard[(i - 1)][j] == SPACE))
 	            flag = true;
-	          else if ((i < 7) && (chessboard[(i + 1)][j] == -1))
+	          else if ((i < 7) && (chessboard[(i + 1)][j] == SPACE))
 	            flag = true;
-	          else if ((j > 0) && (chessboard[i][(j - 1)] == -1))
+	          else if ((j > 0) && (chessboard[i][(j - 1)] == SPACE))
 	            flag = true;
-	          else if ((j < 7) && (chessboard[i][(j + 1)] == -1))
+	          else if ((j < 7) && (chessboard[i][(j + 1)] == SPACE))
 	            flag = true;
 	          if (flag)
 	            ans++;
@@ -933,7 +934,7 @@ public class Main   extends JFrame
 	    for (int i = 0; i < 8; i++) {
 	      for (int j = 0; j < 8; j++)
 	      {
-	        if (chessboard[i][j] != -1) {
+	        if (chessboard[i][j] != SPACE) {
 	          continue;
 	        }
 	        boolean ok = false;
@@ -1214,7 +1215,7 @@ public class Main   extends JFrame
 	  {
 	    int max_value = -this.INF;
 	    int a = -this.INF; int b = this.INF;
-	    this.bot_x = (this.bot_y = -1);
+	    this.bot_x = (this.bot_y = SPACE);
 	    int index=0;
 	    for (int i = 0; i < 8; i++)
 	      for (int j = 0; j < 8; j++) {
