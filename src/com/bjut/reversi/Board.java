@@ -22,6 +22,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/**
+ * 棋盘 界面类
+ * @author liwei
+ *
+ */
 public class Board extends JFrame implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	public static final int WHITE=1;//1表示白方

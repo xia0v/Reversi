@@ -1,4 +1,4 @@
-package com.bjut.reversi;
+package com.bjut.reversi.reference;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -22,7 +22,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import com.bjut.reversi.MLog;
+
 /**
+ * ≤Œ’’≥Ã–Ú
  * http://wybwzl.iteye.com/blog/1160837
  * http://wybwzl.iteye.com/blog/1161895
  * 

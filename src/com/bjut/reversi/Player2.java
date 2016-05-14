@@ -2,7 +2,12 @@ package com.bjut.reversi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
+/**
+ * AI程序
+ * 
+ * @author liwei
+ *
+ */
 public class Player2 implements IPlayer {
 
 	private int board[][] = new int[8][8];//所有棋子
