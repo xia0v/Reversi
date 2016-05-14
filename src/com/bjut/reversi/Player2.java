@@ -52,6 +52,10 @@ public class Player2 implements IPlayer {
 	public boolean isBlack() {
 		return myColor==BLACK;
 	}
+	@Override
+	public void setIsBlack(boolean isBlack) {
+		 myColor=(isBlack?BLACK:WHITE);
+	}
 
 	@Override
 	public void boardInit() {
@@ -66,7 +70,7 @@ public class Player2 implements IPlayer {
 		board[4][3] = BLACK;
 		board[3][4] = BLACK;
 	}
-	private boolean pieceLegalJudge(int x, int y, int color,boolean modifyOrNot) {
+	public boolean pieceLegalJudge(int x, int y, int color,boolean modifyOrNot) {
 		return pieceLegalJudge(x, y, color, modifyOrNot,board);
 	}
 	/**
@@ -213,7 +217,7 @@ public class Player2 implements IPlayer {
 			}
 		}
 		int branches = check.size();
-		for(int i=0;i<branches;i++){
+		for(int i=branches-1;i>=0;i--){
 			int[][] tmpBoard =new int[8][8];
 			for(int j=0;j<8;j++){
 				for(int k=0;k<8;k++)
@@ -221,7 +225,6 @@ public class Player2 implements IPlayer {
 			}
 			pieceLegalJudge(check.get(i)[0],check.get(i)[1], myColor, true,tmpBoard);
 		    int temp = dfs(-myColor, 10, tmpBoard, false, a, b, myColor);
-		    MLog.i("1branches:"+i+" ans="+temp+" x:"+check.get(i)[0]+" y:"+check.get(i)[1]);
 	        if (temp > a)
 	          a = temp;
 	        if (temp <= maxValue)
@@ -234,7 +237,7 @@ public class Player2 implements IPlayer {
 		if(branches!=0&&x!=-1&&y!=-1){
 			 pieceLegalJudge(x, y, myColor, true);
 			 myMessage = this.changeCoordinateForm(x,y);
-			 MLog.i("bot_judge= "+x + "   " + y);
+//			 MLog.i("bot_judge= "+x + "   " + y);
 		}
 		return myMessage;
 	}
@@ -397,26 +400,26 @@ public class Player2 implements IPlayer {
 	        if (chessboard[i][j] == myColor)
 	        {
 	        //TODO 此处只判断了上下左右，是否需要判断周围8个方向更为准确
-	          if ((i > 0) && (chessboard[(i - 1)][j] == -1))
+	          if ((i > 0) && (chessboard[(i - 1)][j] == SPACE))
 	            flag = true;
-	          else if ((i < 7) && (chessboard[(i + 1)][j] == -1))
+	          else if ((i < 7) && (chessboard[(i + 1)][j] == SPACE))
 	            flag = true;
-	          else if ((j > 0) && (chessboard[i][(j - 1)] == -1))
+	          else if ((j > 0) && (chessboard[i][(j - 1)] == SPACE))
 	            flag = true;
-	          else if ((j < 7) && (chessboard[i][(j + 1)] == -1))
+	          else if ((j < 7) && (chessboard[i][(j + 1)] == SPACE))
 	            flag = true;
 	          if (flag)
 	            ans--;
 	        } else {
 	          if (chessboard[i][j] !=  - myColor)
 	            continue;
-	          if ((i > 0) && (chessboard[(i - 1)][j] == -1))
+	          if ((i > 0) && (chessboard[(i - 1)][j] == SPACE))
 	            flag = true;
-	          else if ((i < 7) && (chessboard[(i + 1)][j] == -1))
+	          else if ((i < 7) && (chessboard[(i + 1)][j] == SPACE))
 	            flag = true;
-	          else if ((j > 0) && (chessboard[i][(j - 1)] == -1))
+	          else if ((j > 0) && (chessboard[i][(j - 1)] == SPACE))
 	            flag = true;
-	          else if ((j < 7) && (chessboard[i][(j + 1)] == -1))
+	          else if ((j < 7) && (chessboard[i][(j + 1)] == SPACE))
 	            flag = true;
 	          if (flag)
 	            ans++;
