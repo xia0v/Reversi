@@ -914,7 +914,6 @@ public class Main   extends JFrame
 	      int p1 = 3; int p2 = 7;
 
 	      int ans = p1 * a1 + p2 * a2;
-
 	      return ans;
 	    }
 	    //¼ôÖ¦Ëã·¨

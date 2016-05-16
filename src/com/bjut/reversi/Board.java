@@ -41,6 +41,8 @@ public class Board extends JFrame implements ActionListener{
 	private String myMessage = "NO";//点击输出的内容
 	private JPanel boradLayout;//棋板布局
 	private JButton jpNowchess;//当前棋手颜色
+	private JLabel jpResult;//当前棋数
+	private JLabel jpResult2;//当前棋数
 	
 	private Component[][] boardView = new Component[9][9];//棋盤
 	private int board[][] = new int[8][8];//所有棋子
@@ -200,6 +202,14 @@ public class Board extends JFrame implements ActionListener{
 	    jpNowchess.setBackground(Color.BLACK);
 	    jpNowchess.setBounds(55, 110, 50, 50);
 	    jpMenu.add(jpNowchess);
+	    
+	    jpResult = new JLabel();
+	    jpResult.setBounds(20, 160, 100, 50);
+	    jpMenu.add(jpResult);
+	    jpResult2 = new JLabel();
+	    jpResult2.setBounds(20, 180, 100, 50);
+	    jpMenu.add(jpResult2);
+	    
 	    JButton restart = new JButton("重新开始");
 	    restart.setBounds(40, 350, 70, 30);
 	    jpMenu.add(restart);
@@ -275,6 +285,9 @@ public class Board extends JFrame implements ActionListener{
 			}
 			playerC= playerC==player1?player2:player1;
 			jpNowchess.setBackground(playerC.isBlack()?Color.BLACK:Color.WHITE);
+			int[] result = resultCount(board);
+			jpResult.setText("黑方:"+result[0]+" 白方:"+result[1]);
+			jpResult2.setText("棋子:"+(64-result[2])+" 剩:"+result[2]);
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -426,25 +439,46 @@ public class Board extends JFrame implements ActionListener{
 	public void setBoard(Component[][] board) {
 		this.boardView = board;
 	}
-	public int[] resultCount(){
+	/**
+	 * 获取当前黑白棋数
+	 * @return
+	 */
+	public int[] resultCount(int[][] board){
 		int bCount =0;
 		int wCount =0;
+		int sCount =0;
 		for(int i=0;i<8;i++){ 
 			for(int j=0;j<8;j++){
 				if(board[i][j] == BLACK){
 					bCount++;
-				}else{
+				}else if(board[i][j]==WHITE){
 					wCount++;
+				}else{
+					sCount++;
 				}
 			}
 		}
-		return new int[]{bCount,wCount};
+		return new int[]{bCount,wCount,sCount};
 	}
 	public void showResult(){
-		int[] result = resultCount();
-		String winner = result[0]>result[1]?"黑方":"白方";
+		int[] result = resultCount(board);
+		String winner ="";
+		int winnerColor=SPACE;
+		String winnerPlayer="";
+		if(result[0]>result[1]){
+			winnerColor =BLACK;
+			winner="黑方";
+		}else{
+			winnerColor =WHITE;
+			winner ="白方";
+		}
+		if(winnerColor==BLACK&&player1.isBlack()||winnerColor!=BLACK&&!player1.isBlack()){
+				winnerPlayer = player1.getClass().getSimpleName();
+		}else if(player2!=null){
+				winnerPlayer = player2.getClass().getSimpleName();
+		}
+		MLog.i("黑方："+result[0]+"，白方："+result[1]+"，胜利："+winner+" winnerPlayer:"+winnerPlayer);
 		showDialog("黑方："+result[0]+"，白方："+result[1]+"，胜利："+winner);
-		MLog.i("黑方："+result[0]+"，白方："+result[1]+"，胜利："+winner);
 	}
 	
 	/**

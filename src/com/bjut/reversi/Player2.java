@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 /**
  * AI程序
- * 
+ * 跟Main类的AI逻辑一致
  * @author liwei
  *
  */
@@ -214,22 +214,21 @@ public class Player2 implements IPlayer {
 	    int a = -this.INF; int b = this.INF;
 	    
 		check = new ArrayList<int[]>();
-		for(int i=0;i<8;i++){
-			for(int j=0;j<8;j++){
+		for(int j=0;j<8;j++)
+			for(int i=0;i<8;i++)
 				if(pieceLegalJudge(i, j, myColor, false)){
 					check.add(new int[]{i,j});
-				}
-			}
 		}
 		int branches = check.size();
-		for(int i=branches-1;i>=0;i--){
+		for(int i=0;i<branches;i++){
 			int[][] tmpBoard =new int[8][8];
 			for(int j=0;j<8;j++){
 				for(int k=0;k<8;k++)
 				tmpBoard[j][k]= board[j][k];
 			}
 			pieceLegalJudge(check.get(i)[0],check.get(i)[1], myColor, true,tmpBoard);
-		    int temp = dfs(-myColor, 10, tmpBoard, false, a, b, myColor);
+		    int temp = dfs(-myColor, INF, tmpBoard, false, a, b, myColor);
+//		    MLog.i("1branches:"+i+" ans="+temp+" x:"+check.get(i)[0]+" y:"+check.get(i)[1]+" color:"+(myColor==BLACK?"黑":"白"));
 	        if (temp > a)
 	          a = temp;
 	        if (temp <= maxValue)
@@ -280,6 +279,7 @@ public class Player2 implements IPlayer {
 	      int a2 = judgeStatic(chessboard);//边缘子的数量
 	      int p1 = 3; int p2 = 7;
 	      int ans = p1 * a1 + p2 * a2;
+//	      MLog.i(this.getClass().getSimpleName()+" branches "+branches+" ans:"+ans+" a1:"+a1+" a2:"+a2);
 	      return ans;
 	    }
 	    //剪枝算法
