@@ -17,7 +17,7 @@ public class TestPlatform {
 
 	public static void main(String[] args) {
 		try{
-		String path1= "C:\\Users\\icmonkey\\Documents\\a.jar";//测试程序路径
+		String path1= "E:\\项目\\黑白棋\\10005-李伟_v1.4.jar";//测试程序路径
 		String path2= "E:\\项目\\黑白棋\\测试程序及使用说明\\测试程序及使用说明\\FoolPlayer.jar";//测试程序路径
 		Runtime runtime = Runtime.getRuntime();  
 		Process process = runtime.exec("java -jar "+path1);

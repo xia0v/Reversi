@@ -15,7 +15,7 @@ public class JarMainClass {
 
 	public static void main(String[] args){
 		MLog.DEBUG = false;
-		Player2 player = new Player2();
+		IPlayer player = new Player4();
 		String message = "";
 		String myMessage = "NO";
 		

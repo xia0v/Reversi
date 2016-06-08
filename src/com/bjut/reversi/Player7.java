@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * AI程序 第四版
+ * AI程序
  * 
  * @author liwei
  *
  */
-public class Player4 implements IPlayer {
+public class Player7 implements IPlayer {
 
 	private int board[][] = new int[8][8];// 所有棋子
 	private ArrayList<int[]> check = new ArrayList<int[]>();// 可下棋子
@@ -27,7 +27,7 @@ public class Player4 implements IPlayer {
 
 	private int INF = 10000000;
 
-	public Player4() {
+	public Player7() {
 		boardInit();
 	}
 
@@ -329,12 +329,15 @@ public class Player4 implements IPlayer {
 			}
 			int[] bwCount = resultCount(chessboard);
 			int a2 = judgeStatic(chessboard);// 边缘子的数量，行动力
+			int myCount = myColor==BLACK?bwCount[0]:bwCount[1];
+			int oppCount = myColor==BLACK?bwCount[1]:bwCount[0];
+			int a3 = myCount>oppCount?myCount:-oppCount;//棋子数
 //			int p1 = 3;//权重
 //			int p2 = 7;//行动力
-			int p1 =128/ (Math.abs(40 - bwCount[2])+1)+10;//权重
-//			int p2 = 32+5;//行动力
+			int p1 = 128/ (Math.abs(24 - bwCount[2])+1)+10;//权重
 			int p2 = 64-p1+60;//行动力
-			int ans = p1 * a1 + p2 * a2;
+			int p3 = 64/ (Math.abs(64 - bwCount[2])+1);//棋子数
+			int ans = p1 * a1 + p2 * a2 + p3*a3;
 //			MLog.i(this.getClass().getSimpleName()+" branches "+a1+"*"+p1+" + "+a2+"*"+p2+"="+ans);
 			return ans;
 		}

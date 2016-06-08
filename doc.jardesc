@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="GBK" standalone="no"?>
 <jardesc>
-    <jar path="C:/Users/icmonkey/Documents/a.jar"/>
+    <jar path="E:/项目/黑白棋/10005-李伟_v1.4.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/Reversi/doc.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="true" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
@@ -11,9 +11,9 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=Reversi/src&lt;com.bjut.reversi{Player2.java"/>
         <javaElement handleIdentifier="=Reversi/src&lt;com.bjut.reversi{IPlayer.java"/>
         <javaElement handleIdentifier="=Reversi/src&lt;com.bjut.reversi{MLog.java"/>
         <javaElement handleIdentifier="=Reversi/src&lt;com.bjut.reversi{JarMainClass.java"/>
+        <javaElement handleIdentifier="=Reversi/src&lt;com.bjut.reversi{Player4.java"/>
     </selectedElements>
 </jardesc>

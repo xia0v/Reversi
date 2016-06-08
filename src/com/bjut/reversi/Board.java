@@ -233,7 +233,9 @@ public class Board extends JFrame implements ActionListener{
 		public void actionPerformed(ActionEvent e) {
 			showDialog("游戏重新开始");
 			resetBoard();
-			playColor = BLACK;
+//			playColor = BLACK;
+			playColor = WHITE;
+			readMessage(player1.readMessage("BLACK"));
 			endGame =true;
 		}
 	};
